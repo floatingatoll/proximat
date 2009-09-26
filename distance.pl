@@ -21,5 +21,10 @@ for my $afar (@ARGV[3..$#ARGV]) {
     my(@afar) = split /\s*,\s*/, $afar;
     $afar[$_] += $suf[$_] for 0..$#afar;
     my($dist) = sprintf '%.1f', $gis->distance(@home => @afar)->miles();
-    print "$dist\t".join(',', @afar)."\n" if $dist <= $max;
+    print "$dist\t".join(',', @afar)."\t$afar\n" if $dist <= $max;
 }
+
+my(@glo) = ((($suf[0]*180)-90), (($suf[1]*360)-180));
+
+my($dist) = sprintf '%.1f', $gis->distance(@home => @glo)->miles();
+print "$dist\t".join(',', @glo)."\tglobal\n" if $dist <= $max;
