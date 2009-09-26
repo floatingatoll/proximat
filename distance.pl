@@ -19,7 +19,7 @@ my(@suf) = split /\s*,\s*/, $suf;
 for my $afar (@ARGV[3..$#ARGV]) {
     $afar =~ s/°//g;
     my(@afar) = split /\s*,\s*/, $afar;
-    $afar[$_] .= $suf[$_] for 0..$#afar;
+    $afar[$_] += $suf[$_] for 0..$#afar;
     my($dist) = $gis->distance(@home => @afar)->miles();
     print "$dist\t".join(',', @afar)."\n" if $dist <= $max;
 }
