@@ -1,5 +1,11 @@
 #!/usr/bin/perl
 
+my $outlink = '';
+# would prefer to use drwilco globalmap but it doesn't show the marker when linked
+# http://www.drwilco.net/globalhash/map.html?date=YYYY-MM-DD
+# tried to use xkcd wiki but there's no globalhash-of-the-day template to link to
+# http://wiki.xkcd.com/geohashing/YYYY-MM-DD_global';
+
 use strict;
 use warnings;
 
@@ -26,5 +32,14 @@ $hash->use_30w_rule(1);
 my($lat) = (($hash->lat)*180)-90;
 my($lon) = (($hash->lon)*360)-180;
 
-my $result = eval { $nt->update({ status => sprintf("$date: %.8f,%.8f",$lat,$lon), lat => $lat, long => $lon}) };
+if (length($outlink) > 0) {
+    $outlink =~ s/YYYY-MM-DD/$date/g;
+    $outlink = ' '.$outlink;
+}
+
+my $message = sprintf("$date: %.8f,%.8f$outlink",$lat,$lon);
+if ($ENV{'NT_DEBUG'}) {
+    die $message;
+}
+my $result = eval { $nt->update({ status => $message, lat => $lat, long => $lon}) };
 use Data::Dumper; die Dumper { result => $result, '$@' => $@ } if $@ or not defined $result;
