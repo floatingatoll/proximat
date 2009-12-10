@@ -16,15 +16,19 @@ my($suf) = $ARGV[2];
 $suf =~ s/°//g;
 my(@suf) = split /\s*,\s*/, $suf;
 
-for my $afar (@ARGV[3..$#ARGV]) {
+my($glo) = $ARGV[3];
+$glo =~ s/°//g;
+my(@glo) = split /\s*,\s*/, $glo;
+$glo[0] = ($glo[0]*180)-90;
+$glo[1] = ($glo[1]*360)-180;
+
+for my $afar (@ARGV[4..$#ARGV]) {
     $afar =~ s/°//g;
     my(@afar) = split /\s*,\s*/, $afar;
     $afar[$_] += $suf[$_] for 0..$#afar;
     my($dist) = sprintf '%.1f', $gis->distance(@home => @afar)->miles();
     print "$dist\t".join(',', @afar)."\t$afar\n" if $dist <= $max;
 }
-
-my(@glo) = ((($suf[0]*180)-90), (($suf[1]*360)-180));
 
 my($dist) = sprintf '%.1f', $gis->distance(@home => @glo)->miles();
 print "$dist\t".join(',', @glo)."\tglobal\n" if $dist <= $max;

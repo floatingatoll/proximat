@@ -8,4 +8,4 @@ home=$2
 shift 2
 
 echo "distance	coordinates"
-./geohash.pl $date | xargs -I {} ./distance.pl 100000 $home {} $* | sort -n
+./distance.pl 100000 $home `./geohash.pl $date` $* | sort -n
