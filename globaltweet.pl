@@ -27,4 +27,4 @@ my($lat) = (($hash->lat)*180)-90;
 my($lon) = (($hash->lon)*360)-180;
 
 my $result = eval { $nt->update({ status => sprintf("$date: %.8f,%.8f",$lat,$lon), lat => $lat, long => $lon}) };
-use Data::Dumper; die Dumper { result => $result, '$@' => $@ };
+use Data::Dumper; die Dumper { result => $result, '$@' => $@ } if $@ or not defined $result;
