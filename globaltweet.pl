@@ -45,7 +45,40 @@ if (length($outlink) > 0) {
     $outlink = ' @ '.$outlink;
 }
 
+use Geo::Geonames;
+my $geo = eval { new Geo::GeoNames() };
+my $geores = eval { $geo->find_nearby_placename(lat => $lat, lng => $lon, radius => 300, maxRows => 1, style => 'FULL')->[0] };
+
 my $message = sprintf("$date: %.8f,%.8f$outlink",$lat,$lon);
+
+goto NO_MORE unless eval { $geores->{countryCode} };
+
+my $cc = sprintf('near %s', $geores->{countryCode});
+
+if (length("$message $cc") > 140) {
+    goto NO_MORE;
+}
+
+my $an = '';
+my @an = reverse grep { defined $_ && not ref $_ } @{$geores}{qw( name adminName2 adminName1 countryName )};
+
+for (0..$#an) {
+    my $test = join ', ', @an[0..$_];
+    if (length("$message near $test") > 140) {
+        last;
+    }
+    $an = $_;
+}
+
+if ($an) {
+    $message = "$message near " . join(', ', reverse @an[0..$an]);
+} else {
+    $message = "$message $cc";
+    goto NO_MORE;
+}
+
+NO_MORE:
+
 if ($ENV{'NT_DEBUG'}) {
     die $message;
 }
