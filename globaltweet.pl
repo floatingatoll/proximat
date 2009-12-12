@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-my $outlink = '';
+my $outlink = 'http://www.geonames.org/maps/showOnMap?q=LAT,LON';
 # would prefer to use drwilco globalmap but it doesn't show the marker when linked
 # http://www.drwilco.net/globalhash/map.html?date=YYYY-MM-DD
 # tried to use xkcd wiki but there's no globalhash-of-the-day template to link to
@@ -34,7 +34,15 @@ my($lon) = (($hash->lon)*360)-180;
 
 if (length($outlink) > 0) {
     $outlink =~ s/YYYY-MM-DD/$date/g;
-    $outlink = ' '.$outlink;
+    $outlink =~ s/LAT/$lat/g;
+    $outlink =~ s/LON/$lon/g;
+}
+
+use WWW::Shorten::Bitly;
+$outlink = eval { $outlink = makeashorterlink($outlink, $ENV{'BITLY_USERNAME'}, $ENV{'BITLY_API_KEY'}) } || '';
+
+if (length($outlink) > 0) {
+    $outlink = ' @ '.$outlink;
 }
 
 my $message = sprintf("$date: %.8f,%.8f$outlink",$lat,$lon);
